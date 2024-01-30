@@ -31,6 +31,10 @@ Remember that [Emil Hvitfeldt](https://www.emilhvitfeldt.com/) (of Posit) has pu
 - Run the `load-packages` code chunk or **knit** <img src="../README-img/knit-icon.png" alt="knit" width = "20"/> icon your Rmd document to verify that no errors occur.
 
 ```{r load-packages}
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(ggplot2)
 
 ```
 
@@ -64,10 +68,40 @@ Create a new R code chunk below that is titled `load-data` and reads in the abov
 
 We will continue using personal freedom scores, `pf_score`, as the response variable and build on our model that had `pf_expression_control` as the explanatory variable. 
 
+```{r load-data}
+hfi <- read_tsv("https://www.openintro.org/data/tab-delimited/hfi.txt")
+hfi_2016 <- hfi %>% filter(year == 2016)
+```
+
 Create a new R code chunk below, with an appropriate title, that does the following:
 
 - Review the about page of the data set and select at least one additional numeric variables (hint: look for `<dbl>` or `<int>` designations) to describe its distribution. Remember to write your description.
 - You may also wish to do this for `pf_score` and `pf_expression_control` again to help you remember what you noticed last week.
+
+```{r univariable-plots}
+
+# Histogram for pf_score
+ggplot(hfi_2016, aes(x = pf_score)) +
+  geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Personal Freedom Score in 2016",
+       x = "PF Score",
+       y = "Frequency",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
+
+# Histogram for pf_expression_control
+ggplot(hfi_2016, aes(x = pf_expression_control)) +
+  geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Personal Freedom Expression Control in 2016",
+       x = "PF Expression Control",
+       y = "Frequency",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
+
+```
+
+
+
 
 ## Pairwise relationships
 
