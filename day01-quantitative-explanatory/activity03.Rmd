@@ -30,12 +30,12 @@ Remember that [Emil Hvitfeldt](https://www.emilhvitfeldt.com/) (of Posit) has pu
   
 - Run the `load-packages` code chunk or **knit** <img src="../README-img/knit-icon.png" alt="knit" width = "20"/> icon your Rmd document to verify that no errors occur.
 
-```{r load-packages}
+```{r load-packages, message=FALSE}
 library(tidyverse)
 library(tidymodels)
 library(GGally)
 library(ggplot2)
-
+library(scatterplot3d)
 ```
 
 Since we will be looking at many relationships graphically, it will be nice to not have to code each of these individually.
@@ -78,6 +78,7 @@ Create a new R code chunk below, with an appropriate title, that does the follow
 - Review the about page of the data set and select at least one additional numeric variables (hint: look for `<dbl>` or `<int>` designations) to describe its distribution. Remember to write your description.
 - You may also wish to do this for `pf_score` and `pf_expression_control` again to help you remember what you noticed last week.
 
+
 ```{r univariable-plots}
 
 # Histogram for pf_score
@@ -94,6 +95,16 @@ ggplot(hfi_2016, aes(x = pf_expression_control)) +
   geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
   labs(title = "Distribution of Personal Freedom Expression Control in 2016",
        x = "PF Expression Control",
+       y = "Frequency",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
+
+
+ # Histogram for pf_expression_control
+ggplot(hfi_2016, aes(x = pf_expression_influence)) +
+  geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Personal Freedom Expression Influence in 2016",
+       x = "PF Expression Internet",
        y = "Frequency",
        caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
   theme_minimal()
@@ -133,9 +144,9 @@ Now, we will obtain graphical and numerical summaries to describe the pairwise r
 - Replace `explanatory` in the `select` line with the variable you identified above
 - Run your code chunk or knit your document.
   
-```{verbatim pairs-plot}
+```{r pairs-plot}
 hfi_2016 %>% 
-  select(pf_score, pf_expression_control, explanatory) %>% 
+  select(pf_score, pf_expression_control, pf_expression_influence) %>% 
   ggpairs()
 ```
 
@@ -170,7 +181,7 @@ $$
 - Replace `explanatory`, similarly to what you did in your `pairs-plot` R code chunk.
 - Run your code chunk or knit your document.
   
-```{verbatim mlr-model}
+```{r mlr-model}
 #fit the mlr model
 lm_spec <- linear_reg() %>%
   set_mode("regression") %>%
@@ -179,7 +190,7 @@ lm_spec <- linear_reg() %>%
 lm_spec
 
 mlr_mod <- lm_spec %>% 
-fit(pf_score ~ pf_expression_control + explanatory, data = hfi_2016)
+fit(pf_score ~ pf_expression_control + pf_expression_influence, data = hfi_2016)
 
 # model output
 tidy(mlr_mod)
@@ -207,6 +218,11 @@ Do some internet sleuthing to minimally produce a 3-D scatterplot (you do not ne
 Ideally, this would be something that plays nicely with (looks similar to) `{ggplot2}`.
 
 - Create a new R code chunk, with a descriptive name, and add your code to create this plot.
+
+```{r 3dscatterplot}
+scatterplot3d(hfi_2016$pf_score, hfi_2016$pf_expression_control, hfi_2016$pf_expression_influence)
+```
+
 
 After doing this, respond to the following prompt:
 
@@ -241,7 +257,7 @@ Fortunately, we can create our own.
 - In the code chunk below titled `binary-pred`, replace "verbatim" with "r" just before the code chunk title.
 - Run your code chunk or knit your document.
   
-```{verbatim binary-pred}
+```{r binary-pred}
 hfi_2016 <- hfi_2016 %>%
   mutate(west_atlantic = if_else(
     region %in% c("North America", "Latin America & the Caribbean"),
@@ -256,7 +272,7 @@ hfi_2016 <- hfi_2016 %>%
 - In the code chunk below titled `qual-mlr`, replace "verbatim" with "r" just before the code chunk title.
 - Run your code chunk or knit your document.
 
-```{verbatim qual-mlr}
+```{r qual-mlr}
 # review any visual patterns
 hfi_2016 %>% 
   select(pf_score, west_atlantic, pf_expression_control) %>% 
